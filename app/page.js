@@ -1,27 +1,43 @@
 "use client";
-import getStripe from "../utils/get-stripe";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { AppBar, Container, Toolbar } from "@mui/material";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { SignedIn, SignedOut, useAuth } from "@clerk/nextjs";
+import { Container, Typography, Button, Box } from "@mui/material";
+import LoginForm from '../components/LoginForm';
 
 export default function Home() {
+  const router = useRouter();
+  const { isLoaded, userId } = useAuth();
+  const [showLogin, setShowLogin] = useState(false);
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Container maxWidth="lg">
-      <Head>
-        <Title>FlashCard Saas</Title>
-        <meta name="description" content="Create flashcards from your text" />
-      </Head>
-      <AppBar position="static">
-        <Toolbar>
-          <Typogrophy variant="h6"> Flashcard Saas</Typogrophy>
-          <SignedOut>
-            <Button>Login</Button>
-            <Button>Sign Up</Button>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </Toolbar>
-      </AppBar>
+    <Container maxWidth="sm">
+      <Box mt={4} textAlign="center">
+        <Typography variant="h2" gutterBottom>
+          Welcome to Moel AI
+        </Typography>
+        <Typography variant="h5" gutterBottom>
+          Create and study flashcards powered by AI
+        </Typography>
+        <SignedIn>
+          <Button variant="contained" color="primary" onClick={() => router.push('/dashboard')}>
+            Go to Dashboard
+          </Button>
+        </SignedIn>
+        <SignedOut>
+          {showLogin ? (
+            <LoginForm />
+          ) : (
+            <Button variant="contained" color="primary" onClick={() => setShowLogin(true)}>
+              Get Started
+            </Button>
+          )}
+        </SignedOut>
+      </Box>
     </Container>
   );
 }
